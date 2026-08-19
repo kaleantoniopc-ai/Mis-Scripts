@@ -1,0 +1,71 @@
+-- Servicios necesarios
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Crear la GUI principal
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CheckpointGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Crear el Botón
+local textButton = Instance.new("TextButton")
+textButton.Name = "CheckpointButton"
+textButton.Size = UDim2.new(0, 160, 0, 50)
+textButton.Position = UDim2.new(0.8, -80, 0.2, 0)
+textButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+textButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+textButton.TextSize = 18
+textButton.Font = Enum.Font.SourceSansBold
+textButton.Text = "Guardar Punto"
+textButton.Parent = screenGui
+
+-- Estilo visual del botón (esquinas redondeadas)
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10)
+uiCorner.Parent = textButton
+
+-- Variables de estado
+local savedPosition = nil
+local checkpointPart = nil
+
+-- Función para crear o mover la parte visual del punto
+local function updateCheckpointPart(pos)
+	if not checkpointPart then
+		checkpointPart = Instance.new("Part")
+		checkpointPart.Name = "PuntoGuardadoVisual"
+		checkpointPart.Size = Vector3.new(4, 1, 4)
+		checkpointPart.Anchored = true
+		checkpointPart.BrickColor = BrickColor.new("Lime green")
+		checkpointPart.Material = Enum.Material.Neon
+		checkpointPart.Parent = workspace
+	end
+	checkpointPart.Position = pos - Vector3.new(0, 3, 0)
+end
+
+-- Lógica del Botón
+textButton.MouseButton1Click:Connect(function()
+	local character = player.Character
+	if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+	
+	local hrp = character.HumanoidRootPart
+
+	if savedPosition == nil then
+		-- Guardar la posición actual
+		savedPosition = hrp.Position
+		updateCheckpointPart(savedPosition)
+		
+		textButton.Text = "Ir al Punto"
+		textButton.BackgroundColor3 = Color3.fromRGB(255, 85, 0)
+	else
+		-- Teletransportar al jugador al punto guardado
+		hrp.CFrame = CFrame.new(savedPosition + Vector3.new(0, 3, 0))
+		
+		-- Reiniciar estado si deseas que se borre al usarlo (opcional)
+		-- savedPosition = nil
+		-- if checkpointPart then checkpointPart:Destroy() checkpointPart = nil end
+		-- textButton.Text = "Guardar Punto"
+		-- textButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+	end
+end)
