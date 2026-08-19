@@ -45,7 +45,7 @@ ToggleButton.MouseButton1Click:Connect(function()
         ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
         
         -- Cambia la tasa de refresco de la simulación de red (Baja los hercios de red)
-        settings().Network.IncomingReplicationLag = 5.5 -- Añade 1.5 segundos de retraso artificial de entrada
+        settings().Network.IncomingReplicationLag = 50.5 -- Añade 1.5 segundos de retraso artificial de entrada
     else
         ToggleButton.Text = "Fake Lag: Inactivo"
         ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
