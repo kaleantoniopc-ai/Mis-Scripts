@@ -9,11 +9,11 @@ screenGui.Name = "CheckpointGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Crear el Botón
+-- Crear el Botón Principal (Guardar/Ir)
 local textButton = Instance.new("TextButton")
 textButton.Name = "CheckpointButton"
 textButton.Size = UDim2.new(0, 160, 0, 50)
-textButton.Position = UDim2.new(0.8, -80, 0.2, 0)
+textButton.Position = UDim2.new(0.8, -170, 0.2, 0) -- Ajustado para dar espacio al otro botón
 textButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 textButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 textButton.TextSize = 18
@@ -21,10 +21,25 @@ textButton.Font = Enum.Font.SourceSansBold
 textButton.Text = "Guardar Punto"
 textButton.Parent = screenGui
 
--- Estilo visual del botón (esquinas redondeadas)
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 10)
-uiCorner.Parent = textButton
+local uiCorner1 = Instance.new("UICorner")
+uiCorner1.CornerRadius = UDim.new(0, 10)
+uiCorner1.Parent = textButton
+
+-- Crear el Botón para Quitar/Reiniciar Punto
+local resetButton = Instance.new("TextButton")
+resetButton.Name = "ResetCheckpointButton"
+resetButton.Size = UDim2.new(0, 160, 0, 50)
+resetButton.Position = UDim2.new(0.8, 0, 0.2, 0) -- Posicionado al lado del botón principal
+resetButton.BackgroundColor3 = Color3.fromRGB(150, 150, 150) -- Gris por defecto (desactivado)
+resetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+resetButton.TextSize = 18
+resetButton.Font = Enum.Font.SourceSansBold
+resetButton.Text = "Quitar Punto"
+resetButton.Parent = screenGui
+
+local uiCorner2 = Instance.new("UICorner")
+uiCorner2.CornerRadius = UDim.new(0, 10)
+uiCorner2.Parent = resetButton
 
 -- Variables de estado
 local savedPosition = nil
@@ -44,7 +59,7 @@ local function updateCheckpointPart(pos)
 	checkpointPart.Position = pos - Vector3.new(0, 3, 0)
 end
 
--- Lógica del Botón
+-- Lógica del Botón Principal
 textButton.MouseButton1Click:Connect(function()
 	local character = player.Character
 	if not character or not character:FindFirstChild("HumanoidRootPart") then return end
@@ -58,14 +73,31 @@ textButton.MouseButton1Click:Connect(function()
 		
 		textButton.Text = "Ir al Punto"
 		textButton.BackgroundColor3 = Color3.fromRGB(255, 85, 0)
+		
+		-- Activar visualmente el botón de quitar
+		resetButton.BackgroundColor3 = Color3.fromRGB(230, 50, 50) -- Rojo
 	else
 		-- Teletransportar al jugador al punto guardado
 		hrp.CFrame = CFrame.new(savedPosition + Vector3.new(0, 3, 0))
+	end
+end)
+
+-- Lógica del Botón Quitar Punto
+resetButton.MouseButton1Click:Connect(function()
+	if savedPosition ~= nil then
+		-- Limpiar variables de estado
+		savedPosition = nil
 		
-		-- Reiniciar estado si deseas que se borre al usarlo (opcional)
-		-- savedPosition = nil
-		-- if checkpointPart then checkpointPart:Destroy() checkpointPart = nil end
-		-- textButton.Text = "Guardar Punto"
-		-- textButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+		-- Eliminar la plataforma visual si existe
+		if checkpointPart then
+			checkpointPart:Destroy()
+			checkpointPart = nil
+		end
+		
+		-- Restaurar el estado visual de los botones
+		textButton.Text = "Guardar Punto"
+		textButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+		
+		resetButton.BackgroundColor3 = Color3.fromRGB(150, 150, 150) -- Volver a gris
 	end
 end)
