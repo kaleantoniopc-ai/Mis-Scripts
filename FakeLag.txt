@@ -1,0 +1,55 @@
+-- Script de Simulación de Lag de Red Real (ON/OFF)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local NetworkClient = game:GetService("NetworkClient")
+
+-- Crear la GUI principal
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "NetLagGui"
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 200, 0, 100)
+MainFrame.Position = UDim2.new(0.5, -100, 0.3, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.BackgroundTransparency = 1
+Title.Text = "Fake Lag x5"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
+Title.Font = Enum.Font.SourceSansBold
+Title.Parent = MainFrame
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0.8, 0, 0, 45)
+ToggleButton.Position = UDim2.new(0.1, 0, 0.45, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Text = "Fake Lag: Inactivo"
+ToggleButton.TextSize = 16
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.Parent = MainFrame
+
+local NetworkLagActive = false
+
+-- Función para alterar el tráfico de red saliente
+ToggleButton.MouseButton1Click:Connect(function()
+    NetworkLagActive = not NetworkLagActive
+    if NetworkLagActive then
+        ToggleButton.Text = "Fake Lag: Activo (LAG)"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        
+        -- Cambia la tasa de refresco de la simulación de red (Baja los hercios de red)
+        settings().Network.IncomingReplicationLag = 5.5 -- Añade 1.5 segundos de retraso artificial de entrada
+    else
+        ToggleButton.Text = "Fake Lag: Inactivo"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+        
+        settings().Network.IncomingReplicationLag = 0 -- Restablece la red a la normalidad
+    end
+end)
